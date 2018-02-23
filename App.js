@@ -1,38 +1,56 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
 import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  TouchableOpacity,
+  AsyncStorage
 } from 'react-native';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: {
+        name: 'John Doe',
+        email: 'test@gmail.com',
+        city: 'Pereira'
+      } 
+    };
+  }
 
-type Props = {};
-export default class App extends Component<Props> {
+  saveData() {
+    let obj = {
+      name: 'Alejandro E. Rendon',
+      email: 'rendon@rocka.co',
+      city: 'Pereira'
+    }
+    AsyncStorage.setItem('user', JSON.stringify(obj));
+  }
+
+  displayData = async () => {
+    try {
+      let user = await AsyncStorage.getItem('user');
+      let parsed = JSON.parse(user);
+      this.setState({ user: parsed })
+      alert(this.state.user.name);
+    }
+    catch(error) {
+      alert(error);
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
+        <TouchableOpacity onPress={this.saveData}>
+          <Text>Click me to save data</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={this.displayData}>
+          <Text>Click me to display data</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -44,15 +62,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  }
 });
